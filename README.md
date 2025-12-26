@@ -2,6 +2,10 @@
 
 A powerful interactive file search and navigation tool using `fzf`. Seamlessly switch between file finding (by name) and content searching (by text) modes for fast and intuitive file exploration and editing.
 
+<img src="assets/find.gif" alt="find" width="400">
+<img src="assets/cd.gif" alt="cd" width="400">
+<img src="assets/grep.gif" alt="grep" width="400">
+
 ## ✨ Features
 
 - 🔄 **Dual Mode Operation**: Instantly switch between Find mode and Grep mode with a single `TAB` keypress
@@ -29,6 +33,13 @@ Install these for the best experience:
 | `bat` or `batcat` | Syntax-highlighted previews       | `cat`                   |
 | `eza`             | Modern directory trees            | `tree` or basic display |
 | `tree`            | Directory structure visualization | Basic display           |
+
+> **Note:** To see icons in directory trees when using `eza`, you need to install a [Nerd Font](https://www.nerdfonts.com/). Popular choices include:
+> - [JetBrains Mono Nerd Font](https://www.nerdfonts.com/font-downloads)
+> - [Fira Code Nerd Font](https://www.nerdfonts.com/font-downloads)
+> - [Hack Nerd Font](https://www.nerdfonts.com/font-downloads)
+>
+> After installation, configure your terminal to use the Nerd Font.
 
 ## 📦 Installing Dependencies
 
