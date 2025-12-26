@@ -2,9 +2,24 @@
 
 A powerful interactive file search and navigation tool using `fzf`. Seamlessly switch between file finding (by name) and content searching (by text) modes for fast and intuitive file exploration and editing.
 
-<img src="assets/find.gif" alt="find" width="400">
-<img src="assets/cd.gif" alt="cd" width="400">
-<img src="assets/grep.gif" alt="grep" width="400">
+<table>
+  <tr>
+    <td align="center"><b>Find Mode</b></td>
+    <td align="center"><b>Grep Mode</b></td>
+  </tr>
+  <tr>
+    <td><img src="assets/find.gif"></td>
+    <td><img src="assets/grep.gif"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Change directory</b></td>
+    <td align="center"><b>Open file</b></td>
+  </tr>
+  <tr>
+    <td><img src="assets/cd.gif"></td>
+    <td><img src="assets/open.gif"></td>
+  </tr>
+</table>
 
 ## ✨ Features
 
