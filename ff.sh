@@ -19,8 +19,8 @@ ff() {
     --layout=reverse
     --border
     --info=inline
-    --prompt="❯  "
-    --pointer="▶"
+    --prompt=">"
+    --pointer=">"
     --marker="✓"
     --ansi
     --preview-window=right:60%
@@ -72,7 +72,7 @@ ff() {
       # Apply options strictly to this command execution
       out=$("${find_cmd_arr[@]}" 2>/dev/null | \
         FZF_DEFAULT_OPTS="$base_opts" fzf --expect=tab,ctrl-o --cycle -i \
-        --prompt="🔍 FIND >  " \
+        --prompt="🔍 FIND > " \
         --header=$'TAB: switch | ENTER: cd | CTRL-O: open' \
         --bind "ctrl-u:preview-up,ctrl-d:preview-down" \
         --preview "$preview_cmd")
@@ -91,7 +91,7 @@ ff() {
       # Apply options strictly to this command execution
       out=$(echo "$MSG_GREP_GUIDE" | \
         FZF_DEFAULT_OPTS="$base_opts" fzf --expect=tab,ctrl-o --delimiter '\|' --cycle --disabled \
-        --prompt="📝 GREP >  " \
+        --prompt="📝 GREP > " \
         --header=$'TAB: switch | ENTER: cd | CTRL-O: open' \
         --bind "start:reload:$full_reload_cmd" \
         --bind "change:reload:sleep 0.1; $full_reload_cmd" \
