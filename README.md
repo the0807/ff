@@ -1,5 +1,8 @@
 # 🔍 ff - Flexible File Finder
 
+[![CI](https://github.com/the0807/ff/actions/workflows/test.yml/badge.svg)](https://github.com/the0807/ff/actions/workflows/test.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A powerful interactive file search and navigation tool using `fzf`. Seamlessly switch between file finding (by name) and content searching (by text) modes for fast and intuitive file exploration and editing.
 
 <table>

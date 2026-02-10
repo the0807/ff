@@ -1,0 +1,170 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: '.'
+          severity: warning
+          ignore_paths: assets
+
+  syntax-check:
+    name: Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Fish shell
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fish
+
+      - name: Check Bash syntax (ff.sh)
+        run: bash -n ff.sh
+
+      - name: Check Bash syntax (install.sh)
+        run: bash -n install.sh
+
+      - name: Check Bash syntax (uninstall.sh)
+        run: bash -n uninstall.sh
+
+      - name: Check Fish syntax (ff.fish)
+        run: fish --no-execute ff.fish
+
+  install-test-ubuntu:
+    name: Install Test (Ubuntu)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shell: [bash, zsh, fish]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fzf fd-find ripgrep bat eza tree zsh fish
+
+      - name: Test install script
+        run: |
+          # Create a test installation directory
+          export HOME="${GITHUB_WORKSPACE}/test-home"
+          mkdir -p "$HOME"
+
+          # Set shell for test
+          case "${{ matrix.shell }}" in
+            bash)
+              export SHELL=/bin/bash
+              CONFIG_FILE="$HOME/.bashrc"
+              SOURCE_FILE="$HOME/.config/ff/ff.sh"
+              ;;
+            zsh)
+              export SHELL=/usr/bin/zsh
+              CONFIG_FILE="$HOME/.zshrc"
+              SOURCE_FILE="$HOME/.config/ff/ff.sh"
+              ;;
+            fish)
+              export SHELL=/usr/bin/fish
+              CONFIG_FILE="$HOME/.config/fish/config.fish"
+              SOURCE_FILE="$HOME/.config/ff/ff.fish"
+              ;;
+          esac
+
+          # Run installer
+          bash install.sh
+
+          # Verify installation
+          if [ ! -f "$SOURCE_FILE" ]; then
+            echo "Error: $SOURCE_FILE not created"
+            exit 1
+          fi
+
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "Error: $CONFIG_FILE not created"
+            exit 1
+          fi
+
+          if ! grep -q "source.*$SOURCE_FILE" "$CONFIG_FILE"; then
+            echo "Error: source line not added to $CONFIG_FILE"
+            exit 1
+          fi
+
+          echo "✓ Installation test passed for ${{ matrix.shell }}"
+
+      - name: Test uninstall script
+        run: |
+          export HOME="${GITHUB_WORKSPACE}/test-home"
+
+          case "${{ matrix.shell }}" in
+            bash)
+              export SHELL=/bin/bash
+              CONFIG_FILE="$HOME/.bashrc"
+              ;;
+            zsh)
+              export SHELL=/usr/bin/zsh
+              CONFIG_FILE="$HOME/.zshrc"
+              ;;
+            fish)
+              export SHELL=/usr/bin/fish
+              CONFIG_FILE="$HOME/.config/fish/config.fish"
+              ;;
+          esac
+
+          # Run uninstaller (auto-confirm)
+          echo "y" | bash uninstall.sh
+
+          # Verify uninstallation
+          if [ -d "$HOME/.config/ff" ]; then
+            echo "Error: ~/.config/ff still exists"
+            exit 1
+          fi
+
+          if grep -q "source.*ff" "$CONFIG_FILE" 2>/dev/null; then
+            echo "Error: ff source line still in $CONFIG_FILE"
+            exit 1
+          fi
+
+          echo "✓ Uninstallation test passed for ${{ matrix.shell }}"
+
+  install-test-macos:
+    name: Install Test (macOS)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew install fzf fd ripgrep bat eza tree
+
+      - name: Test install script (bash)
+        run: |
+          export HOME="${GITHUB_WORKSPACE}/test-home"
+          mkdir -p "$HOME"
+          export SHELL=/bin/bash
+
+          bash install.sh
+
+          if [ ! -f "$HOME/.config/ff/ff.sh" ]; then
+            echo "Error: ff.sh not installed"
+            exit 1
+          fi
+
+          echo "✓ macOS installation test passed"
+
