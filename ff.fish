@@ -5,6 +5,18 @@
 # =============================================================================
 
 function ff
+    # --- Check required dependencies ---
+    if not command -v fzf >/dev/null 2>&1
+        echo "❌ Error: fzf is not installed" >&2
+        echo "" >&2
+        echo "fzf is required for ff to work. Please install it:" >&2
+        echo "  Ubuntu/Debian: sudo apt install fzf" >&2
+        echo "  macOS:         brew install fzf" >&2
+        echo "" >&2
+        echo "For more info: https://github.com/junegunn/fzf#installation" >&2
+        return 1
+    end
+
     set -l mode "find"
     if test (count $argv) -gt 0
         set mode $argv[1]
@@ -174,22 +186,42 @@ function ff
 
         # --- 5. Execute action based on key pressed ---
         if test "$key" = "ctrl-o"
-            if test -f "$file"
-                if test $IS_VSCODE -eq 1
-                    if test -n "$line"
-                        code --goto "$file:$line"
-                        echo "📄 Opened: $file|$line"
+            if not test -f "$file"
+                echo "❌ Error: File not found: $file" >&2
+                return 1
+            end
+
+            if test $IS_VSCODE -eq 1
+                if test -n "$line"
+                    if code --goto "$file:$line" 2>/dev/null
+                        echo "📄 Opened: $file:$line"
                     else
-                        code "$file"
-                        echo "📄 Opened: $file"
+                        echo "❌ Error: Failed to open file in VSCode" >&2
+                        echo "   Make sure VSCode is installed and 'code' command is available" >&2
+                        return 1
                     end
                 else
-                    if test -n "$line"
-                        eval $EDITOR_CMD "+$line" "$file"
-                        echo "📄 Opened: $file|$line"
-                    else
-                        eval $EDITOR_CMD "$file"
+                    if code "$file" 2>/dev/null
                         echo "📄 Opened: $file"
+                    else
+                        echo "❌ Error: Failed to open file in VSCode" >&2
+                        return 1
+                    end
+                end
+            else
+                if test -n "$line"
+                    if eval $EDITOR_CMD "+$line" "$file"
+                        echo "📄 Opened: $file:$line"
+                    else
+                        echo "❌ Error: Failed to open file with $EDITOR_CMD" >&2
+                        return 1
+                    end
+                else
+                    if eval $EDITOR_CMD "$file"
+                        echo "📄 Opened: $file"
+                    else
+                        echo "❌ Error: Failed to open file with $EDITOR_CMD" >&2
+                        return 1
                     end
                 end
             end
@@ -200,13 +232,23 @@ function ff
             set target_dir (dirname "$file")
         else if test -d "$file"
             set target_dir "$file"
+        else
+            echo "❌ Error: Invalid selection: $file" >&2
+            echo "   Path does not exist or is not accessible" >&2
+            return 1
         end
 
         if test -n "$target_dir"; and test -d "$target_dir"
-            cd "$target_dir"
-            echo "📂 Moved to: "(pwd)
+            if cd "$target_dir" 2>/dev/null
+                echo "📂 Moved to: "(pwd)
+            else
+                echo "❌ Error: Failed to change directory to: $target_dir" >&2
+                echo "   Check permissions or if the directory still exists" >&2
+                return 1
+            end
         else
-            echo "❌ Invalid path" >&2
+            echo "❌ Error: Target directory not found: $target_dir" >&2
+            return 1
         end
         return
     end

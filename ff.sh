@@ -5,6 +5,18 @@
 # =============================================================================
 
 ff() {
+  # --- Check required dependencies ---
+  if ! command -v fzf >/dev/null 2>&1; then
+    echo "❌ Error: fzf is not installed" >&2
+    echo "" >&2
+    echo "fzf is required for ff to work. Please install it:" >&2
+    echo "  Ubuntu/Debian: sudo apt install fzf" >&2
+    echo "  macOS:         brew install fzf" >&2
+    echo "" >&2
+    echo "For more info: https://github.com/junegunn/fzf#installation" >&2
+    return 1
+  fi
+
   local mode="${1:-find}"
   local out key result file line target_dir
   local preview_cmd grep_base_cmd full_reload_cmd
@@ -143,39 +155,69 @@ ff() {
 
     # --- 5. Execute action based on key pressed ---
     if [[ "$key" == "ctrl-o" ]]; then
-      if [[ -f "$file" ]]; then
-        if [[ "$IS_VSCODE" -eq 1 ]]; then
-            if [[ -n "$line" ]]; then 
-              code --goto "$file:$line"
-              echo "📄 Opened: $file|$line"
-            else 
-              code "$file"
-              echo "📄 Opened: $file"
-            fi
+      if [[ ! -f "$file" ]]; then
+        echo "❌ Error: File not found: $file" >&2
+        return 1
+      fi
+
+      if [[ "$IS_VSCODE" -eq 1 ]]; then
+        if [[ -n "$line" ]]; then
+          if code --goto "$file:$line" 2>/dev/null; then
+            echo "📄 Opened: $file:$line"
+          else
+            echo "❌ Error: Failed to open file in VSCode" >&2
+            echo "   Make sure VSCode is installed and 'code' command is available" >&2
+            return 1
+          fi
         else
-          if [[ -n "$line" ]]; then 
-            $EDITOR_CMD "+$line" "$file"
-            echo "📄 Opened: $file|$line"
-          else 
-            $EDITOR_CMD "$file"
+          if code "$file" 2>/dev/null; then
             echo "📄 Opened: $file"
+          else
+            echo "❌ Error: Failed to open file in VSCode" >&2
+            return 1
+          fi
+        fi
+      else
+        if [[ -n "$line" ]]; then
+          if $EDITOR_CMD "+$line" "$file"; then
+            echo "📄 Opened: $file:$line"
+          else
+            echo "❌ Error: Failed to open file with $EDITOR_CMD" >&2
+            return 1
+          fi
+        else
+          if $EDITOR_CMD "$file"; then
+            echo "📄 Opened: $file"
+          else
+            echo "❌ Error: Failed to open file with $EDITOR_CMD" >&2
+            return 1
           fi
         fi
       fi
       return
     fi
 
-    if [[ -f "$file" ]]; then 
+    if [[ -f "$file" ]]; then
         target_dir="$(dirname "$file")"
-    elif [[ -d "$file" ]]; then 
+    elif [[ -d "$file" ]]; then
         target_dir="$file"
+    else
+        echo "❌ Error: Invalid selection: $file" >&2
+        echo "   Path does not exist or is not accessible" >&2
+        return 1
     fi
 
     if [[ -n "$target_dir" && -d "$target_dir" ]]; then
-      cd "$target_dir" || return
-      echo "📂 Moved to: $(pwd)"
+      if cd "$target_dir" 2>/dev/null; then
+        echo "📂 Moved to: $(pwd)"
+      else
+        echo "❌ Error: Failed to change directory to: $target_dir" >&2
+        echo "   Check permissions or if the directory still exists" >&2
+        return 1
+      fi
     else
-      echo "❌ Invalid path" >&2
+      echo "❌ Error: Target directory not found: $target_dir" >&2
+      return 1
     fi
     return
   done
