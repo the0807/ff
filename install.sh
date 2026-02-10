@@ -29,7 +29,7 @@ fi
 echo -e "${GREEN}✓${NC} fzf found"
 
 # --- Check optional dependencies ---
-OPTIONAL_TOOLS=("fd" "rg" "eza" "tree")
+OPTIONAL_TOOLS=("rg" "eza" "tree")
 FOUND_TOOLS=()
 MISSING_TOOLS=()
 
@@ -40,6 +40,15 @@ elif command -v bat >/dev/null 2>&1; then
     FOUND_TOOLS+=("bat")
 else
     MISSING_TOOLS+=("bat(batcat)")
+fi
+
+# Check fd/fdfind separately (either one is fine)
+if command -v fd >/dev/null 2>&1; then
+    FOUND_TOOLS+=("fd")
+elif command -v fdfind >/dev/null 2>&1; then
+    FOUND_TOOLS+=("fdfind")
+else
+    MISSING_TOOLS+=("fd(fdfind)")
 fi
 
 # Check other optional tools
