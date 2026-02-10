@@ -29,16 +29,25 @@ ff() {
   # --- 1. Dependency tool configuration ---
   local BAT_CMD="cat"
   local BAT_OPTS=""
-  
-  if command -v batcat >/dev/null; then 
+
+  if command -v batcat >/dev/null; then
     BAT_CMD="batcat"
     BAT_OPTS="--style=numbers --color=always"
-  elif command -v bat >/dev/null; then 
+  elif command -v bat >/dev/null; then
     BAT_CMD="bat"
     BAT_OPTS="--style=numbers --color=always"
   fi
 
-  local USE_FD=0; command -v fd >/dev/null && USE_FD=1
+  local FD_CMD=""
+  local USE_FD=0
+  if command -v fd >/dev/null; then
+    FD_CMD="fd"
+    USE_FD=1
+  elif command -v fdfind >/dev/null; then
+    FD_CMD="fdfind"
+    USE_FD=1
+  fi
+
   local USE_RG=0; command -v rg >/dev/null && USE_RG=1
   local USE_EZA=0; command -v eza >/dev/null && USE_EZA=1
   
@@ -64,7 +73,7 @@ ff() {
       fi
 
       if [[ "$USE_FD" -eq 1 ]]; then
-        find_cmd_arr=(fd . --type f --type d --follow --color=never)
+        find_cmd_arr=($FD_CMD . --type f --type d --follow --color=never)
       else
         find_cmd_arr=(find . \( -type d -name '.\*' \) -prune -o -print)
       fi

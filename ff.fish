@@ -49,8 +49,13 @@ function ff
         set BAT_OPTS "--style=numbers --color=always"
     end
 
+    set -l FD_CMD ""
     set -l USE_FD 0
     if command -v fd >/dev/null 2>&1
+        set FD_CMD "fd"
+        set USE_FD 1
+    else if command -v fdfind >/dev/null 2>&1
+        set FD_CMD "fdfind"
         set USE_FD 1
     end
 
@@ -90,7 +95,7 @@ function ff
             end
 
             if test $USE_FD -eq 1
-                set find_cmd "fd . --type f --type d --follow --color=never"
+                set find_cmd "$FD_CMD . --type f --type d --follow --color=never"
             else
                 set find_cmd "find . \\( -type d -name '.\\*' \\) -prune -o -print"
             end
