@@ -11,8 +11,7 @@ NC='\033[0m' # No Color
 
 # --- Installation configuration ---
 INSTALL_DIR="$HOME/.config/ff"
-INSTALL_FILE="$INSTALL_DIR/ff.sh"
-REPO_URL="https://raw.githubusercontent.com/the0807/ff/main/ff.sh"
+REPO_BASE_URL="https://raw.githubusercontent.com/the0807/ff/main"
 
 echo -e "${BLUE}╔════════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║   🔍 ff - Flexible File Finder Installer   ║${NC}"
@@ -98,24 +97,43 @@ echo -e "${BLUE}[4/5]${NC} Configuring shell..."
 
 USER_SHELL=$(basename "$SHELL")
 SHELL_CONFIG=""
+INSTALL_FILE=""
+REPO_URL=""
 
 case "$USER_SHELL" in
     zsh)
         SHELL_NAME="zsh"
         SHELL_CONFIG="$HOME/.zshrc"
+        INSTALL_FILE="$INSTALL_DIR/ff.sh"
+        REPO_URL="$REPO_BASE_URL/ff.sh"
         ;;
     bash)
         SHELL_NAME="bash"
+        INSTALL_FILE="$INSTALL_DIR/ff.sh"
+        REPO_URL="$REPO_BASE_URL/ff.sh"
         if [[ "$OSTYPE" == "darwin"* && -f "$HOME/.bash_profile" ]]; then
             SHELL_CONFIG="$HOME/.bash_profile"
         else
             SHELL_CONFIG="$HOME/.bashrc"
         fi
         ;;
+    fish)
+        SHELL_NAME="fish"
+        SHELL_CONFIG="$HOME/.config/fish/config.fish"
+        INSTALL_FILE="$INSTALL_DIR/ff.fish"
+        REPO_URL="$REPO_BASE_URL/ff.fish"
+        # Ensure fish config directory exists
+        mkdir -p "$HOME/.config/fish"
+        ;;
     *)
         echo -e "${YELLOW}⚠${NC} Could not auto-detect shell type (Current: $USER_SHELL)."
-        echo "Please manually add this line to your config file:"
-        echo "  source $INSTALL_FILE"
+        echo "Supported shells: bash, zsh, fish"
+        echo ""
+        echo "For bash/zsh, manually add this line to your config file:"
+        echo "  source $INSTALL_DIR/ff.sh"
+        echo ""
+        echo "For fish, manually add this line to ~/.config/fish/config.fish:"
+        echo "  source $INSTALL_DIR/ff.fish"
         exit 0
         ;;
 esac
@@ -138,9 +156,18 @@ else
         echo -e "${GREEN}✓${NC} Created backup at ${SHELL_CONFIG}.bak"
     fi
 
+    # Add to config file
     echo "" >> "$SHELL_CONFIG"
     echo "# ff - Flexible File Finder" >> "$SHELL_CONFIG"
-    echo "$SOURCE_LINE" >> "$SHELL_CONFIG"
+
+    if [ "$SHELL_NAME" = "fish" ]; then
+        # Fish uses 'source' command
+        echo "source $INSTALL_FILE" >> "$SHELL_CONFIG"
+    else
+        # Bash/Zsh use 'source' command
+        echo "source $INSTALL_FILE" >> "$SHELL_CONFIG"
+    fi
+
     echo -e "${GREEN}✓${NC} Added to $SHELL_CONFIG"
 fi
 

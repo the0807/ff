@@ -37,6 +37,7 @@ A powerful interactive file search and navigation tool using `fzf`. Seamlessly s
 
 ### Required
 - **`fzf`** - Interactive fuzzy finder (core dependency)
+- **Supported Shells**: Bash, Zsh, Fish
 
 ### Optional (Highly Recommended)
 Install these for the best experience:
@@ -79,15 +80,25 @@ curl -fsSL https://raw.githubusercontent.com/the0807/ff/main/install.sh | bash
 
 Then reload your shell:
 ```bash
-source ~/.zshrc   # or ~/.bashrc for bash users
+source ~/.zshrc          # for zsh users
+source ~/.bashrc         # for bash users
+source ~/.config/fish/config.fish  # for fish users
 ```
 
 ### Method 2: Manual Install
 
 1. **Download the script:**
+
+**For Bash/Zsh:**
 ```bash
 mkdir -p ~/.config/ff
 curl -fsSL https://raw.githubusercontent.com/the0807/ff/main/ff.sh -o ~/.config/ff/ff.sh
+```
+
+**For Fish:**
+```bash
+mkdir -p ~/.config/ff
+curl -fsSL https://raw.githubusercontent.com/the0807/ff/main/ff.fish -o ~/.config/ff/ff.fish
 ```
 
 2. **Add to your shell configuration:**
@@ -102,6 +113,12 @@ source ~/.zshrc
 ```bash
 echo 'source ~/.config/ff/ff.sh' >> ~/.bashrc
 source ~/.bashrc
+```
+
+**For Fish** (`~/.config/fish/config.fish`):
+```fish
+echo 'source ~/.config/ff/ff.fish' >> ~/.config/fish/config.fish
+source ~/.config/fish/config.fish
 ```
 
 ## 📖 Usage
