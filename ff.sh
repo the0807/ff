@@ -66,7 +66,7 @@ ff() {
       if [[ "$USE_FD" -eq 1 ]]; then
         find_cmd_arr=(fd . --type f --type d --follow --color=never)
       else
-        find_cmd_arr=(find . -name '.*' -prune -o \( -type f -o -type d \) -print)
+        find_cmd_arr=(find . \( -type d -name '.\*' \) -prune -o -print)
       fi
 
       # Apply options strictly to this command execution

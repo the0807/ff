@@ -92,7 +92,7 @@ function ff
             if test $USE_FD -eq 1
                 set find_cmd "fd . --type f --type d --follow --color=never"
             else
-                set find_cmd "find . -name '.*' -prune -o \\( -type f -o -type d \\) -print"
+                set find_cmd "find . \\( -type d -name '.\\*' \\) -prune -o -print"
             end
 
             set out (eval $find_cmd 2>/dev/null | \
