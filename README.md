@@ -126,13 +126,13 @@ source ~/.config/fish/config.fish
 
 ## 🗑️ Uninstallation
 
-To remove ff from your system:
+If you installed ff using the quick install method, the uninstaller is already available locally:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/the0807/ff/main/uninstall.sh | bash
+bash ~/.config/ff/uninstall.sh
 ```
 
-Or manually:
+If the local uninstaller is not available, you can download it:
 
 ```bash
 # Download and run the uninstaller

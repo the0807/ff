@@ -126,10 +126,11 @@ echo -e "${BLUE}[3/5]${NC} Creating installation directory..."
 mkdir -p "$INSTALL_DIR"
 echo -e "${GREEN}✓${NC} Directory created: $INSTALL_DIR"
 
-# --- 4. Download script (curl/wget fallback) ---
+# --- 4. Download scripts (curl/wget fallback) ---
 echo ""
-echo -e "${BLUE}[4/5]${NC} Downloading script..."
+echo -e "${BLUE}[4/5]${NC} Downloading scripts..."
 
+# Download main script
 if command -v curl >/dev/null 2>&1; then
     if curl -fsSL "$REPO_URL" -o "$INSTALL_FILE"; then
         echo -e "${GREEN}✓${NC} Downloaded (via curl): $(basename $INSTALL_FILE)"
@@ -150,6 +151,28 @@ else
 fi
 
 chmod +x "$INSTALL_FILE"
+
+# Download uninstall script
+UNINSTALL_FILE="$INSTALL_DIR/uninstall.sh"
+UNINSTALL_URL="$REPO_BASE_URL/uninstall.sh"
+
+if command -v curl >/dev/null 2>&1; then
+    if curl -fsSL "$UNINSTALL_URL" -o "$UNINSTALL_FILE"; then
+        echo -e "${GREEN}✓${NC} Downloaded (via curl): uninstall.sh"
+    else
+        echo -e "${YELLOW}⚠${NC} Failed to download uninstall.sh (non-critical)"
+    fi
+elif command -v wget >/dev/null 2>&1; then
+    if wget -qO "$UNINSTALL_FILE" "$UNINSTALL_URL"; then
+        echo -e "${GREEN}✓${NC} Downloaded (via wget): uninstall.sh"
+    else
+        echo -e "${YELLOW}⚠${NC} Failed to download uninstall.sh (non-critical)"
+    fi
+fi
+
+if [ -f "$UNINSTALL_FILE" ]; then
+    chmod +x "$UNINSTALL_FILE"
+fi
 
 # --- 5. Add to shell config (with Backup) ---
 echo ""
@@ -190,3 +213,8 @@ echo ""
 echo "To start using ff, run:"
 echo -e "  ${BLUE}source $SHELL_CONFIG${NC}"
 echo ""
+if [ -f "$INSTALL_DIR/uninstall.sh" ]; then
+    echo "To uninstall ff later, run:"
+    echo -e "  ${BLUE}bash $INSTALL_DIR/uninstall.sh${NC}"
+    echo ""
+fi
