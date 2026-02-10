@@ -10,8 +10,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # --- Installation configuration ---
-INSTALL_DIR="$HOME"
-INSTALL_FILE="$INSTALL_DIR/.ff.sh"
+INSTALL_DIR="$HOME/.config/ff"
+INSTALL_FILE="$INSTALL_DIR/ff.sh"
 REPO_URL="https://raw.githubusercontent.com/the0807/ff/main/ff.sh"
 
 echo -e "${BLUE}╔════════════════════════════════════════════╗${NC}"
@@ -61,9 +61,15 @@ if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
     echo -e "  ${YELLOW}(Install these for better experience)${NC}"
 fi
 
-# --- 2. Download ff.sh (curl/wget fallback) ---
+# --- 2. Create installation directory ---
 echo ""
-echo -e "${BLUE}[2/4]${NC} Downloading ff.sh..."
+echo -e "${BLUE}[2/4]${NC} Creating installation directory..."
+mkdir -p "$INSTALL_DIR"
+echo -e "${GREEN}✓${NC} Directory created: $INSTALL_DIR"
+
+# --- 3. Download ff.sh (curl/wget fallback) ---
+echo ""
+echo -e "${BLUE}[3/4]${NC} Downloading ff.sh..."
 
 if command -v curl >/dev/null 2>&1; then
     if curl -fsSL "$REPO_URL" -o "$INSTALL_FILE"; then
@@ -86,9 +92,9 @@ fi
 
 chmod +x "$INSTALL_FILE"
 
-# --- 3. Detect Shell & Config File (Robust) ---
+# --- 4. Detect Shell & Config File (Robust) ---
 echo ""
-echo -e "${BLUE}[3/4]${NC} Configuring shell..."
+echo -e "${BLUE}[4/5]${NC} Configuring shell..."
 
 USER_SHELL=$(basename "$SHELL")
 SHELL_CONFIG=""
@@ -117,9 +123,9 @@ esac
 echo -e "${GREEN}✓${NC} Detected shell: $SHELL_NAME"
 echo -e "${GREEN}✓${NC} Target config: $SHELL_CONFIG"
 
-# --- 4. Add to shell config (with Backup) ---
+# --- 5. Add to shell config (with Backup) ---
 echo ""
-echo -e "${BLUE}[4/4]${NC} Updating configuration..."
+echo -e "${BLUE}[5/5]${NC} Updating configuration..."
 
 SOURCE_LINE="source $INSTALL_FILE"
 

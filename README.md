@@ -86,20 +86,21 @@ source ~/.zshrc   # or ~/.bashrc for bash users
 
 1. **Download the script:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/the0807/ff/main/ff.sh -o ~/.ff.sh
+mkdir -p ~/.config/ff
+curl -fsSL https://raw.githubusercontent.com/the0807/ff/main/ff.sh -o ~/.config/ff/ff.sh
 ```
 
 2. **Add to your shell configuration:**
 
 **For Zsh** (`~/.zshrc`):
 ```bash
-echo 'source ~/.ff.sh' >> ~/.zshrc
+echo 'source ~/.config/ff/ff.sh' >> ~/.zshrc
 source ~/.zshrc
 ```
 
 **For Bash** (`~/.bashrc` or `~/.bash_profile` on macOS):
 ```bash
-echo 'source ~/.ff.sh' >> ~/.bashrc
+echo 'source ~/.config/ff/ff.sh' >> ~/.bashrc
 source ~/.bashrc
 ```
 
