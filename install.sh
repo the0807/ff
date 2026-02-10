@@ -60,40 +60,9 @@ if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
     echo -e "  ${YELLOW}(Install these for better experience)${NC}"
 fi
 
-# --- 2. Create installation directory ---
+# --- 2. Detect Shell & Config File (Robust) ---
 echo ""
-echo -e "${BLUE}[2/4]${NC} Creating installation directory..."
-mkdir -p "$INSTALL_DIR"
-echo -e "${GREEN}✓${NC} Directory created: $INSTALL_DIR"
-
-# --- 3. Download ff.sh (curl/wget fallback) ---
-echo ""
-echo -e "${BLUE}[3/4]${NC} Downloading ff.sh..."
-
-if command -v curl >/dev/null 2>&1; then
-    if curl -fsSL "$REPO_URL" -o "$INSTALL_FILE"; then
-        echo -e "${GREEN}✓${NC} Downloaded (via curl)"
-    else
-        echo -e "${RED}✗${NC} Download failed using curl"
-        exit 1
-    fi
-elif command -v wget >/dev/null 2>&1; then
-    if wget -qO "$INSTALL_FILE" "$REPO_URL"; then
-        echo -e "${GREEN}✓${NC} Downloaded (via wget)"
-    else
-        echo -e "${RED}✗${NC} Download failed using wget"
-        exit 1
-    fi
-else
-    echo -e "${RED}✗${NC} Neither curl nor wget found."
-    exit 1
-fi
-
-chmod +x "$INSTALL_FILE"
-
-# --- 4. Detect Shell & Config File (Robust) ---
-echo ""
-echo -e "${BLUE}[4/5]${NC} Configuring shell..."
+echo -e "${BLUE}[2/5]${NC} Detecting shell..."
 
 USER_SHELL=$(basename "$SHELL")
 SHELL_CONFIG=""
@@ -140,6 +109,38 @@ esac
 
 echo -e "${GREEN}✓${NC} Detected shell: $SHELL_NAME"
 echo -e "${GREEN}✓${NC} Target config: $SHELL_CONFIG"
+echo -e "${GREEN}✓${NC} Install file: $INSTALL_FILE"
+
+# --- 3. Create installation directory ---
+echo ""
+echo -e "${BLUE}[3/5]${NC} Creating installation directory..."
+mkdir -p "$INSTALL_DIR"
+echo -e "${GREEN}✓${NC} Directory created: $INSTALL_DIR"
+
+# --- 4. Download script (curl/wget fallback) ---
+echo ""
+echo -e "${BLUE}[4/5]${NC} Downloading script..."
+
+if command -v curl >/dev/null 2>&1; then
+    if curl -fsSL "$REPO_URL" -o "$INSTALL_FILE"; then
+        echo -e "${GREEN}✓${NC} Downloaded (via curl): $(basename $INSTALL_FILE)"
+    else
+        echo -e "${RED}✗${NC} Download failed using curl"
+        exit 1
+    fi
+elif command -v wget >/dev/null 2>&1; then
+    if wget -qO "$INSTALL_FILE" "$REPO_URL"; then
+        echo -e "${GREEN}✓${NC} Downloaded (via wget): $(basename $INSTALL_FILE)"
+    else
+        echo -e "${RED}✗${NC} Download failed using wget"
+        exit 1
+    fi
+else
+    echo -e "${RED}✗${NC} Neither curl nor wget found."
+    exit 1
+fi
+
+chmod +x "$INSTALL_FILE"
 
 # --- 5. Add to shell config (with Backup) ---
 echo ""
