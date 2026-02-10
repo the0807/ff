@@ -121,6 +121,27 @@ echo 'source ~/.config/ff/ff.fish' >> ~/.config/fish/config.fish
 source ~/.config/fish/config.fish
 ```
 
+## 🗑️ Uninstallation
+
+To remove ff from your system:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/the0807/ff/main/uninstall.sh | bash
+```
+
+Or manually:
+
+```bash
+# Download and run the uninstaller
+curl -fsSL https://raw.githubusercontent.com/the0807/ff/main/uninstall.sh -o /tmp/uninstall-ff.sh
+bash /tmp/uninstall-ff.sh
+```
+
+The uninstaller will:
+- Remove `~/.config/ff/` directory
+- Clean up shell configuration files (`.zshrc`, `.bashrc`, `config.fish`)
+- Create backups before modifying any files
+
 ## 📖 Usage
 
 ### Basic Commands
